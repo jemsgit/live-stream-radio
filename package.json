@@ -39,13 +39,16 @@
     "find": "^0.2.9",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^7.0.0",
+    "googleapis": "^59.0.0",
     "imagemin": "^6.0.0",
     "imagemin-gifsicle": "^5.2.0",
     "is-running": "^2.1.0",
+    "lodash": "^4.17.20",
     "minimist": "^1.2.0",
     "music-metadata": "^3.1.0",
     "term-img": "^2.1.0",
-    "upath": "^1.1.0"
+    "upath": "^1.1.0",
+    "yandex-money-sdk": "^0.1.7"
   },
   "devDependencies": {
     "docz": "^0.11.2",

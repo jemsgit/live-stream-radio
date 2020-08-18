@@ -71,7 +71,59 @@
         "image_path": "./live-stream-radio-overlay-image.png",
         "position_x": 0,
         "position_y": 0
+      },
+      "subscribers": {
+        "enabled": true,
+        "label": "Lates subscriber: ",
+        "font_color": "#FFFFFF",
+        "font_border": "#000000",
+        "font_size": "7",
+        "position_x": "2",
+        "position_y": "5"
+      },
+      "donator": {
+        "enabled": true,
+        "label": "Top donator: ",
+        "font_color": "#FFFFFF",
+        "font_border": "#000000",
+        "font_size": "7",
+        "position_x": "2",
+        "position_y": "10"
       }
+    },
+    "subscribers": {
+      "enabled": false,
+      "clientId": "",
+      "secret": "",
+      "refreshToken": "",
+      "accessToken": "",
+      "image": {
+        "image_path": "./zombie.gif"
+      },
+      "font_color": "#FFFFFF",
+      "font_size": "7",
+      "font_path": "./fonts/Lato-Regular.ttf",
+      "text_position_x": "2",
+      "text_position_y": "5",
+      "label": "New subscriber: ",
+      "time_start": 0,
+      "time_end": 30
+    },
+    "donation": {
+      "enabled": false,
+      "apiKey": "yandex-api-key",
+      "image": {
+        "image_path": "./zombie.gif"
+      },
+      "font_color": "#FFFFFF",
+      "font_size": "7",
+      "font_path": "./fonts/Lato-Regular.ttf",
+      "text_position_x": "2",
+      "text_position_y": "5",
+      "label": "New donation: ",
+      "payment_label": "LiveRadio",
+      "time_start": 40,
+      "time_end": 60
     }
   },
   "interlude": {

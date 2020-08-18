@@ -16,7 +16,7 @@ const getOverlayTextString = async (path, config, typeKey, metadata) => {
     // Check if we have a title option
     if (overlayConfigObject.title && overlayConfigObject.title.enabled) {
       const itemObject = overlayConfigObject.title;
-      const safeText = safeStrings.forFilter( itemObject.text );
+      const safeText = safeStrings.forFilter(itemObject.text);
       let itemString =
         `drawtext=text='${safeText}'` +
         `:fontfile=${fontPath}` +
@@ -33,10 +33,43 @@ const getOverlayTextString = async (path, config, typeKey, metadata) => {
       overlayTextItems.push(itemString);
     }
 
+    // Check if we have an subscriber option
+    if (overlayConfigObject.subscribers && overlayConfigObject.subscribers.enabled) {
+      console.log(metadata);
+      const itemObject = overlayConfigObject.subscribers;
+      const safeText = safeStrings.forFilter(itemObject.label + metadata.common.latesSubscriber);
+      let itemString =
+        `drawtext=text='${safeText}'` +
+        `:fontfile=${fontPath}` +
+        `:fontsize=(w * ${itemObject.font_size / 300})` +
+        `:bordercolor=${itemObject.font_border}` +
+        `:borderw=1` +
+        `:fontcolor=${itemObject.font_color}` +
+        `:y=(h * ${itemObject.position_y / 100})` +
+        `:x=(w * ${itemObject.position_x / 100})`;
+      overlayTextItems.push(itemString);
+    }
+
+    // Check if we have an subscriber option
+    if (overlayConfigObject.donator && overlayConfigObject.donator.enabled) {
+      const itemObject = overlayConfigObject.donator;
+      const safeText = safeStrings.forFilter(itemObject.label + metadata.common.topDonator);
+      let itemString =
+        `drawtext=text='${safeText}'` +
+        `:fontfile=${fontPath}` +
+        `:fontsize=(w * ${itemObject.font_size / 300})` +
+        `:bordercolor=${itemObject.font_border}` +
+        `:borderw=1` +
+        `:fontcolor=${itemObject.font_color}` +
+        `:y=(h * ${itemObject.position_y / 100})` +
+        `:x=(w * ${itemObject.position_x / 100})`;
+      overlayTextItems.push(itemString);
+    }
+
     // Check if we have an artist option
     if (overlayConfigObject.artist && overlayConfigObject.artist.enabled) {
       const itemObject = overlayConfigObject.artist;
-      const safeText = safeStrings.forFilter( itemObject.label + metadata.common.artist);
+      const safeText = safeStrings.forFilter(itemObject.label + metadata.common.artist);
       let itemString =
         `drawtext=text='${safeText}'` +
         `:fontfile=${fontPath}` +
@@ -52,7 +85,7 @@ const getOverlayTextString = async (path, config, typeKey, metadata) => {
     // Check if we have an album option
     if (overlayConfigObject.album && overlayConfigObject.album.enabled) {
       const itemObject = overlayConfigObject.album;
-      const safeText = safeStrings.forFilter( itemObject.label + metadata.common.album);
+      const safeText = safeStrings.forFilter(itemObject.label + metadata.common.album);
       let itemString =
         `drawtext=text='${safeText}'` +
         `:fontfile=${fontPath}` +
@@ -68,7 +101,7 @@ const getOverlayTextString = async (path, config, typeKey, metadata) => {
     // Check if we have an artist option
     if (overlayConfigObject.song && overlayConfigObject.song.enabled) {
       const itemObject = overlayConfigObject.song;
-      const safeText = safeStrings.forFilter( itemObject.label + metadata.common.title);
+      const safeText = safeStrings.forFilter(itemObject.label + metadata.common.title);
       let itemString =
         `drawtext=text='${safeText}'` +
         `:fontfile=${fontPath}` +

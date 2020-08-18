@@ -8,9 +8,12 @@ const progress = require('cli-progress');
 // Get our Services and helper fucntions
 const safeStrings = require('./safeStrings');
 const historyService = require('../history.service');
+const subscriberService = require('../subscribers.service');
+const donationService = require('../donation.service');
 const supportedFileTypes = require('../supportedFileTypes');
 const getRandomFileWithExtensionFromPath = require('./randomFile');
 const getOverlayTextString = require('./overlayText');
+const getEventOverlayTextString = require('./eventOverlayText');
 
 // Allow pre rendering the next video if needed
 let nextVideo = undefined;
@@ -82,6 +85,18 @@ module.exports = async (path, config, outputLocation, endCallback, errorCallback
   console.log(chalk.magenta(`Finding/Optimizing video... 📺`));
   console.log('\n');
 
+  if (!subscriberService.inited) {
+    await subscriberService.init(config);
+  }
+
+  if (!donationService.inited) {
+    await donationService.init(config);
+  }
+
+  let newSubscriber = await subscriberService.updateSubscribers();
+  let latesSubscriber = subscriberService.latestSubscriber;
+  let newDonation = await donationService.updateDonations();
+  let topDonator = donationService.getTopDonator();
   // Get the stream video
   let randomVideo;
   let optimizedVideo;
@@ -101,7 +116,8 @@ module.exports = async (path, config, outputLocation, endCallback, errorCallback
 
   // Get the information about the song
   const metadata = await musicMetadata.parseFile(randomSong, { duration: true });
-
+  metadata.common.latesSubscriber = latesSubscriber;
+  metadata.common.topDonator = topDonator;
   // Log data about the song
   if (metadata.common.artist) {
     console.log(chalk.yellow(`Artist: ${metadata.common.artist}`));
@@ -233,6 +249,42 @@ module.exports = async (path, config, outputLocation, endCallback, errorCallback
       complexFilterString += `, `;
     }
     complexFilterString += `${overlayTextFilterString}`;
+  }
+
+  let sourceCount = 3;
+
+  if (config[typeKey].subscribers && config[typeKey].subscribers.enabled && config[typeKey].subscribers.image && newSubscriber) {
+    sourceCount += 1;
+    console.log('we have new subscriber');
+    let text = await getEventOverlayTextString(path, config, typeKey, 'subscribers', newSubscriber);
+    const imageObject = config[typeKey].subscribers.image;
+    let itemObject = config[typeKey].subscribers;
+    const time = itemObject.time_start;
+    const timeEnd = itemObject.time_end;
+    const imagePath = upath.join(path, imageObject.image_path);
+    ffmpegCommand = ffmpegCommand.input(imagePath).inputOptions(['-ignore_loop 0']);
+    complexFilterString +=
+      ` [inputvideo1];` +
+      `[${sourceCount}:v][inputvideo1] scale2ref=w=iw/4:h=ih/3 [scaledoverlayimage][scaledvideo];` +
+      `[scaledvideo][scaledoverlayimage] overlay=x=(w+350)/2:y=(h+100)/2:enable='between(t,${time},${timeEnd})',${text}`;
+  }
+
+  if (config[typeKey].donation && config[typeKey].donation.enabled && config[typeKey].donation.image && newDonation) {
+    sourceCount += 1;
+    console.log('we have new donation');
+    let donationText = `${newDonation.name} - ${newDonation.amount}${newDonation.currency}`;
+    let text = await getEventOverlayTextString(path, config, typeKey, 'donation', donationText);
+    const imageObject = config[typeKey].donation.image;
+    let itemObject = config[typeKey].donation;
+    const time = itemObject.time_start;
+    const timeEnd = itemObject.time_end;
+    const imagePath = upath.join(path, imageObject.image_path);
+    ffmpegCommand = ffmpegCommand.input(imagePath).inputOptions(['-ignore_loop 0']);
+    complexFilterString +=
+      ` [inputvideo2];` +
+      `[${sourceCount}:v][inputvideo2] scale2ref=w=iw/4:h=ih/3 [scaledoverlayimage][scaledvideo];` +
+      // Notice the overlay shortest =1, this is required to stop the video from looping infinitely
+      `[scaledvideo][scaledoverlayimage] overlay=x=(w+350)/2:y=(h+100)/2:enable='between(t,${time},${timeEnd})',${text}`;
   }
 
   // Set our final output video pad
